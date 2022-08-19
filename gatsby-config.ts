@@ -3,32 +3,27 @@ import path from "path"
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `source-git-demo`,
-    siteUrl: `https://www.yourdomain.tld`,
+    title: `source-airtable-demo`,
   },
-  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
-  // If you use VSCode you can also use the GraphQL plugin
-  // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
   plugins: [
     {
-      resolve: `gatsby-source-git`,
+      resolve: `gatsby-source-airtable`,
       options: {
-        name: `md-files`,
-        remote: `https://github.com/KyleAMathews/md-files`,
-        branch: `main`,
-      },
-    },
-    `gatsby-transformer-remark`,
-    // This is a bit hacky — you have to load gatsby-source-filesystem so
-    // transformers can load files from gatsby-source-git as source-git assumes
-    // source-filesystem is loaded.
-    {
-      resolve: `gatsby-source-filesystem`,
-      options: {
-        path: path.resolve(`./src`),
-        // Ignore everything.
-        ignore: [`**`],
+        apiKey: process.env.AIRTABLE_KEY,
+        concurrency: 5, // default, see using markdown and attachments for more information
+        tables: [
+          {
+            baseId: `appb6IaKcHnhRq6AU`,
+            // tableName: `Flinstone characters`,
+            tableName: `Flintstone characters`,
+            queryName: `flinstone`, // optionally default is false - makes all records in this table a separate node type, based on your tableView, or if not present, tableName, e.g. a table called "Fruit" would become "allAirtableFruit". Useful when pulling many airtables with similar structures or fields that have different types. See https://github.com/jbolda/gatsby-source-airtable/pull/52.
+            // mapping: { `CASE_SENSITIVE_COLUMN_NAME`: `VALUE_FORMAT` }, // optional, e.g. "text/markdown", "fileNode"
+            // tableLinks: [`CASE`, `SENSITIVE`, `COLUMN`, `NAMES`], // optional, for deep linking to records across tables.
+            // separateNodeType: false, // boolean, default is false, see the documentation on naming conflicts for more information
+            // separateMapType: false, // boolean, default is false, see the documentation on using markdown and attachments for more information
+          },
+        ],
       },
     },
   ],
